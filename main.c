@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <time.h>
 int game_is_running = FALSE;
+int movex = 0;
+int movey = 0;
 SDL_Window *window = NULL;
 SDL_Renderer *render = NULL;
 int last_frame_time = 0;
@@ -45,9 +47,24 @@ void process_input() {
     game_is_running = FALSE;
     break;
   case SDL_KEYDOWN:
+    printf("%d", event.key.keysym.sym);
     if (event.key.keysym.sym == SDLK_ESCAPE) {
       game_is_running = FALSE;
+    } else if (event.key.keysym.sym == 1073741905) {
+      movey = 30;
+      movex = 0;
+    } else if (event.key.keysym.sym == SDLK_UP) {
+      movey = -30;
+      movex = 0;
+    } else if (event.key.keysym.sym == SDLK_RIGHT) {
+      movey = 0;
+      movex = 30;
+    } else if (event.key.keysym.sym == SDLK_LEFT) {
+      movey = 0;
+      movex = -30;
     }
+
+    break;
   }
 }
 void destroy_window() {
@@ -56,8 +73,8 @@ void destroy_window() {
   SDL_Quit();
 }
 void setup() {
-  ball.x = 20;
-  ball.y = 20;
+  ball.x = 400;
+  ball.y = 300;
   ball.width = 15;
   ball.height = 15;
 }
@@ -69,8 +86,8 @@ void update() {
   float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
 
   last_frame_time = SDL_GetTicks();
-  ball.x += 70 * delta_time;
-  ball.y += 50 * delta_time;
+  ball.x += movex * delta_time;
+  ball.y += movey * delta_time;
 }
 void renderer() {
   SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
