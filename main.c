@@ -6,11 +6,13 @@
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
 int game_is_running = FALSE;
 int movex = 0;
 int movey = 0;
+bool gameOver = false;
 SDL_Window *window = NULL;
 SDL_Renderer *render = NULL;
 int last_frame_time = 0;
@@ -88,6 +90,9 @@ void update() {
   last_frame_time = SDL_GetTicks();
   ball.x += movex * delta_time;
   ball.y += movey * delta_time;
+  if (ball.x >= 800 || ball.y >= 600 || ball.x <= 0 || ball.y <= 0) {
+    gameOver = true;
+  }
 }
 void renderer() {
   SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
@@ -100,6 +105,20 @@ void renderer() {
   };
   SDL_SetRenderDrawColor(render, 255, 255, 255, 255);
   SDL_RenderFillRect(render, &rect_ball);
+  if (gameOver) {
+    /* SDL_SetRenderDrawColor(render, 255, 0, 0, 255); */
+    /* SDL_Rect rect_error = { */
+    /*     400, */
+    /*     300, */
+    /*     200, */
+    /*     100, */
+    /* }; */
+    ball.x = 400;
+    ball.y = 300;
+    gameOver = false;
+
+    /* SDL_RenderFillRect(render, &rect_error); */
+  }
 
   SDL_RenderPresent(render);
 }
