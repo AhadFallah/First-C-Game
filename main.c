@@ -12,6 +12,8 @@
 int game_is_running = FALSE;
 int movex = 0;
 int movey = 0;
+int grid_x = (WIDTH / 2) - (GRID_DIM / 2);
+int grid_y = (HEIGHT / 2) - (GRID_DIM / 2);
 bool gameOver = false;
 SDL_Window *window = NULL;
 SDL_Renderer *render = NULL;
@@ -22,6 +24,22 @@ struct ball {
   float width;
   float height;
 } ball;
+
+void render_grid(SDL_Renderer *render, int x, int y) {
+
+  SDL_SetRenderDrawColor(render, 54, 54, 54, 255);
+  int cell_size = GRID_DIM / GRID_SIZE;
+  SDL_Rect cell;
+  cell.w = cell_size;
+  cell.h = cell_size;
+  for (int i = 0; i < GRID_SIZE; i++) {
+    for (int j = 0; j < GRID_SIZE; j++) {
+      cell.x = x + (i * cell_size);
+      cell.y = y + (j * cell_size);
+      SDL_RenderDrawRect(render, &cell);
+    }
+  }
+}
 int init_window(void) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "Error initializing SDL\n");
@@ -90,12 +108,11 @@ void update() {
   last_frame_time = SDL_GetTicks();
   ball.x += movex * delta_time;
   ball.y += movey * delta_time;
-  if (ball.x >= 800 || ball.y >= 600 || ball.x <= 0 || ball.y <= 0) {
+  if (ball.x > 799 || ball.y > 599 || ball.x < 1 || ball.y < 1) {
     gameOver = true;
   }
 }
 void renderer() {
-  SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
   SDL_RenderClear(render);
   SDL_Rect rect_ball = {
       ball.x,
@@ -119,7 +136,9 @@ void renderer() {
 
     /* SDL_RenderFillRect(render, &rect_error); */
   }
+  render_grid(render, grid_x, grid_y);
 
+  SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
   SDL_RenderPresent(render);
 }
 
